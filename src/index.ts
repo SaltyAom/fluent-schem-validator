@@ -1,5 +1,4 @@
-import type SchemaBuilder from 'fluent-json-schema'
-import type { ObjectSchema } from 'fluent-json-schema'
+import type { S, ObjectSchema } from 'fluent-json-schema'
 
 type Formats =
     | 'relative-json-pointer'
@@ -179,7 +178,7 @@ const validate = (
         | Array<any>
         | Record<string, any>
         | Object
-        | typeof SchemaBuilder,
+        | S,
     s: FluentSchema | ObjectSchema | Object
 ): boolean => {
     const isFluentSchema = 'isFluentSchema' in s
