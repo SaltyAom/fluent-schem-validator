@@ -1,3 +1,4 @@
+import type SchemaBuilder from 'fluent-json-schema'
 import type { ObjectSchema } from 'fluent-json-schema'
 
 type Formats =
@@ -171,7 +172,14 @@ const validateNumber = (v: number, s: FluentNumberSchema) => {
 }
 
 const validate = (
-    model: string | number | boolean | Array<any> | Record<string, any>,
+    model:
+        | string
+        | number
+        | boolean
+        | Array<any>
+        | Record<string, any>
+        | Object
+        | typeof SchemaBuilder,
     s: FluentSchema | ObjectSchema | Object
 ): boolean => {
     const isFluentSchema = 'isFluentSchema' in s
