@@ -1,38 +1,4 @@
-import S from 'fluent-json-schema'
 import type { ObjectSchema } from 'fluent-json-schema'
-
-const example = S.object()
-    .prop('username', S.string().required().minLength(3).maxLength(25))
-    .prop('password', S.string().required().minLength(8).maxLength(96))
-    .prop(
-        'profile',
-        S.object()
-            .required()
-            .prop('alias', S.string().minLength(3).maxLength(15))
-            .prop('email', S.string().required().format('email').maxLength(128))
-            .prop('name', S.string().required().minLength(3).maxLength(50))
-            .prop('bio', S.string().maxLength(180))
-    )
-
-const anyofExample = S.anyOf([
-    S.object().prop('username', S.string().required()),
-    S.object().prop('password', S.string().required())
-])
-
-const allOfExample = S.object().allOf([
-    S.object()
-        .prop('username', S.string().required())
-        .prop('password', S.string())
-        .prop('email', S.string()),
-    S.object()
-        .prop('username', S.string())
-        .prop('password', S.string().required())
-        .prop('email', S.string())
-])
-
-const arrayExample = S.array().items([S.string(), S.number()])
-
-const primitiveExample = S.string().valueOf()
 
 type Formats =
     | 'relative-json-pointer'
@@ -290,28 +256,3 @@ const validate = (
 }
 
 export default validate
-
-// console.log(
-//     validate(
-//         {
-//             username: 'username',
-//             password: 'password',
-//             profile: {
-//                 email: 'saltyaom@gmail.com',
-//                 name: 'name',
-//                 bio: 'bio'
-//             }
-//         },
-//         example
-//     )
-// )
-
-// console.log(
-//     validate(
-//         {
-//             username: 'test',
-//             password: 'test'
-//         },
-//         allOfExample
-//     )
-// )

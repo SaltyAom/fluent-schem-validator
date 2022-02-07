@@ -1,6 +1,6 @@
 {
   "name": "fluent-schema-validator",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Small Validator for Fluent JSON Schema",
   "main": "dist/index.js",
 	"module": "dist/mjs/index.js",
