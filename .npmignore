@@ -1,0 +1,15 @@
+.dist
+__specs__
+.swc
+dist
+node_modules
+src
+.gitignore
+.npmignore
+.prettierrc
+.swcrc
+.swcrcmjs
+jest.config.js
+nodemon.json
+pnpm-lock.yaml
+tsconfig.json

@@ -1,0 +1,45 @@
+{
+  "name": "fluent-schema-validator",
+  "version": "0.0.0",
+  "description": "Small Validator for Fluent JSON Schema",
+  "main": "dist/index.js",
+	"module": "dist/mjs/index.js",
+	"esnext": "dist/mjs/esm/index.js",
+	"types": "dist/index.d.ts",
+	"typings": "dist/index.d.ts",
+  "keywords": [
+    "fastify",
+    "fluent schema",
+    "fluent json schema",
+    "fluent schema validator"
+	],
+  "scripts": {
+    "dev": "nodemon --config nodemon.json",
+    "test": "jest",
+    "build": "rimraf dist && swc src -d dist && tsc && swc src --config-file .swcrcmjs -d dist/mjs"
+  },
+	"author": {
+		"name": "saltyaom",
+		"url": "https://github.com/SaltyAom",
+		"email": "saltyaom@gmail.com"
+	},
+  "homepage": "https://github.com/saltyaom/fluent-schema-validator",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/saltyaom/fluent-schema-validator"
+	},
+	"bugs": "https://github.com/SaltyAom/fluent-schema-validator/issues",
+  "license": "MIT",
+  "devDependencies": {
+    "@swc/cli": "^0.1.55",
+    "@swc/core": "^1.2.136",
+    "@swc/jest": "^0.2.17",
+    "@types/jest": "^27.4.0",
+    "fluent-json-schema": "^3.0.1",
+    "jest": "^27.5.0",
+    "nodemon": "^2.0.15",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.5"
+  }
+}
