@@ -4,7 +4,7 @@
   "description": "Small Validator for Fluent JSON Schema",
   "main": "dist/index.js",
 	"module": "dist/mjs/index.js",
-	"esnext": "dist/mjs/esm/index.js",
+	"esnext": "dist/mjs/index.js",
 	"types": "dist/index.d.ts",
 	"typings": "dist/index.d.ts",
   "keywords": [
