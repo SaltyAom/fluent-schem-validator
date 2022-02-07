@@ -1,5 +1,10 @@
+[![forthebadge](https://forthebadge.com/images/badges/contains-cat-gifs.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/kinda-sfw.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/made-with-typescript.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/makes-people-smile.svg)](https://forthebadge.com)
 # Fluent Schema Validator
 Small validator for [Fluent JSON Schema](https://github.com/fastify/fluent-json-schema).
+
+Don't let yourself handle validation, let the automation handle it.
+
+<img src="https://user-images.githubusercontent.com/35027979/152814345-9a9eb0f7-6ba4-45d2-acd3-6f0c2c101df5.gif" width=240 />
 
 ## Why
 Fastify use Fluent JSON Schema for verifying schema of incoming request.
@@ -51,7 +56,7 @@ const schema = S.object()
 
 const value = {
     username: "saltyaom",
-    password: "12345678
+    password: "12345678"
 }
 
 validate(value, schema) // true
@@ -93,4 +98,6 @@ const value = {
 validate(value, schema) // true
 ```
 
-It would work the way you expected, see more in `test-case (__specs__ folder)`.
+It would work the way you expected, see more in [test cases or \__specs\__ folder](https://github.com/SaltyAom/fluent-schem-validator/tree/main/__specs__).
+
+<img src="https://user-images.githubusercontent.com/35027979/152814755-5bd24066-ad56-48bf-96b1-7690944393e7.gif" width=192 />
