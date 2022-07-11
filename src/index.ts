@@ -161,11 +161,13 @@ const validateString = (v: string, s: FluentStringSchema) => {
 }
 
 const validateNumber = (v: number, s: FluentNumberSchema) => {
-    if (s.minimum && v < s.minimum) return false
-    if (s.exclusiveMinimum && v <= s.exclusiveMinimum) return false
-    if (s.maximum && v > s.maximum) return false
-    if (s.exclusiveMaximum && v >= s.exclusiveMaximum) return false
-    if (s.multipleOf && v % s.multipleOf !== 0) return false
+    if (s.minimum !== undefined && v < s.minimum) return false
+    if (s.exclusiveMinimum !== undefined && v <= s.exclusiveMinimum)
+        return false
+    if (s.maximum !== undefined && v > s.maximum) return false
+    if (s.exclusiveMaximum !== undefined && v >= s.exclusiveMaximum)
+        return false
+    if (s.multipleOf !== undefined && v % s.multipleOf !== 0) return false
 
     return true
 }

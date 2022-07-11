@@ -44,6 +44,13 @@ describe('Number Schema', () => {
         expect(validate(24, schema)).toBe(false)
     })
 
+    it('handle falsey value', () => {
+        const schema = S.number().minimum(0)
+
+        expect(validate(0, schema)).toBe(true)
+        expect(validate(-2, schema)).toBe(false)
+    })
+
     it('handle combination', () => {
         const schema = S.number().minimum(5).maximum(8)
 
