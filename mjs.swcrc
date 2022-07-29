@@ -3,8 +3,8 @@
         "type": "es6"
     },
     "jsc": {
-        // "baseUrl": "src",
-        "target": "es2019",
+        "baseUrl": "src",
+        "target": "es2020",
         "parser": {
             "syntax": "typescript"
         },

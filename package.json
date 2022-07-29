@@ -16,8 +16,8 @@
   "scripts": {
     "dev": "nodemon",
     "test": "jest",
-    "build": "rimraf dist && swc src --config-file .swcrccjs -d dist && tsc --project tsconfig.lib.json && swc src --config-file .swcrc -d dist/mjs",
-    "release": "npm run build && npm run test && npm run publish"
+    "build": "rimraf dist && swc src --config-file cjs.swcrc -d dist && tsc --project tsconfig.lib.json && swc src --config-file mjs.swcrc -d dist/mjs",
+    "release": "npm run build && npm run test && npm publish"
   },
   "author": {
     "name": "saltyaom",

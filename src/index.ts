@@ -96,7 +96,11 @@ const uriRegex =
 const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
-const validateString = (v: string, s: FluentStringSchema, label: string) => {
+const validateString = (
+    v: string,
+    s: FluentStringSchema,
+    label: string
+): true => {
     if (s.minLength && v.length < s.minLength)
         throw new Error(
             `Expected ${label} to have minimum length of ${s.maxLength} found ${v.length}`
@@ -192,7 +196,11 @@ const validateString = (v: string, s: FluentStringSchema, label: string) => {
     return true
 }
 
-const validateNumber = (v: number, s: FluentNumberSchema, label: string) => {
+const validateNumber = (
+    v: number,
+    s: FluentNumberSchema,
+    label: string
+): true => {
     if (s.minimum !== undefined && v < s.minimum)
         throw new Error(
             `Expected ${label} to have minimum of ${s.minimum} found ${v}`
@@ -245,11 +253,7 @@ const formatMultipleError = (
 
 export type Schema = FluentSchema | ObjectSchema | Object
 
-const validate = (
-    value: any,
-    s: Schema,
-    label: string = 'value'
-): boolean => {
+export const validate = (value: any, s: Schema, label: string = 'value'): true => {
     const isFluentSchema = 'isFluentSchema' in s
     if (!isFluentSchema && !('type' in s)) throw new Error('Invalid schema')
 
@@ -295,7 +299,17 @@ const validate = (
         return true
     }
 
-    if (schema.not) return !validate(value, schema.not)
+    if (schema.not) {
+        const valid = validate(value, schema.not)
+
+        if (valid)
+            throw new Error(
+                `Expected ${label} not to be ${JSON.stringify(schema.not)}`
+            )
+
+        return true
+    }
+
     if (schema.allOf) {
         const invalid = schema.allOf.find((s, index) => {
             try {
@@ -408,7 +422,7 @@ const validate = (
             )}] found [${Object.keys(value).join(', ')}]`
         )
 
-    return keys.every((key) => {
+    const valid = keys.every((key) => {
         const s: FluentObjectSchema = schema.properties![key]
         const child = (value as unknown as Record<string, any>)[key]
 
@@ -435,6 +449,27 @@ const validate = (
 
         return validate(child, s, `${label}.${key}`)
     })
+
+    if (!valid)
+        throw new Error('Failed to validated somehow, please report this bug')
+
+    return true
 }
 
-export default validate
+const validateUnion = (
+    value: any,
+    s: Schema,
+    label: string = 'value'
+): true | Error | TypeError => {
+    try {
+        return validate(value, s, label)
+    } catch (error) {
+        return error as Error
+    }
+}
+
+export {
+    validate as throwableValidate
+}
+
+export default validateUnion

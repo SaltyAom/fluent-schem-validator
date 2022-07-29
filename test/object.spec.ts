@@ -1,5 +1,5 @@
 import S from 'fluent-json-schema'
-import { validate } from './setup'
+import validate from '../src'
 
 describe('Object Schema', () => {
     it('check type', () => {
