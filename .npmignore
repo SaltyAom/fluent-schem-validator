@@ -1,5 +1,6 @@
 .dist
-__specs__
+test
+example
 .swc
 dist
 node_modules
