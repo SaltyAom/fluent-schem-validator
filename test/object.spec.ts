@@ -1,5 +1,5 @@
 import S from 'fluent-json-schema'
-import validate from '../dist'
+import { validate } from './setup'
 
 describe('Object Schema', () => {
     it('check type', () => {
@@ -14,9 +14,9 @@ describe('Object Schema', () => {
                 schema
             )
         ).toBe(true)
-        expect(validate('Ok', schema)).toBe(false)
-        expect(validate(false, schema)).toBe(false)
-        expect(validate([], schema)).toBe(false)
+        expect(validate('Ok', schema)).toBeInstanceOf(Error)
+        expect(validate(false, schema)).toBeInstanceOf(Error)
+        expect(validate([], schema)).toBeInstanceOf(Error)
         // Set is an object
         expect(validate(new Set(), schema)).toBe(true)
     })
@@ -54,7 +54,7 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
 
         expect(
             validate(
@@ -65,7 +65,7 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
     })
 
     it('check required property', () => {
@@ -90,7 +90,7 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
     })
 
     it('check nested object property', () => {
@@ -128,7 +128,7 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
 
         // Sub schema is required
         expect(
@@ -139,7 +139,7 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
     })
 
     it('handle oneOf/anyOf', () => {
@@ -157,7 +157,7 @@ describe('Object Schema', () => {
                         .prop('road', S.string())
                 )
         ]
-        const schema = S.anyOf(logic)
+        const anyOfSchema = S.anyOf(logic)
         const oneOfSchema = S.oneOf(logic)
 
         expect(
@@ -169,7 +169,7 @@ describe('Object Schema', () => {
                         city: ''
                     }
                 },
-                schema
+                anyOfSchema
             )
         ).toBe(true)
 
@@ -179,7 +179,7 @@ describe('Object Schema', () => {
                     name: 'hi',
                     age: 0
                 },
-                schema
+                anyOfSchema
             )
         ).toBe(true)
 
@@ -192,9 +192,9 @@ describe('Object Schema', () => {
                         road: ''
                     }
                 },
-                schema
+                anyOfSchema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
 
         expect(
             validate(
@@ -207,7 +207,7 @@ describe('Object Schema', () => {
                 },
                 oneOfSchema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
     })
 
     it('handle allOf', () => {
@@ -250,7 +250,7 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
 
         expect(
             validate(
@@ -260,7 +260,7 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
     })
 
     it('handle combination', () => {
@@ -318,7 +318,7 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
 
         expect(
             validate(
@@ -332,7 +332,7 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
 
         expect(
             validate(
@@ -342,7 +342,7 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
 
         expect(
             validate(
@@ -355,7 +355,7 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
 
         expect(
             validate(
@@ -369,7 +369,7 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
 
         expect(
             validate(
@@ -384,6 +384,6 @@ describe('Object Schema', () => {
                 },
                 schema
             )
-        ).toBe(false)
+        ).toBeInstanceOf(Error)
     })
 })

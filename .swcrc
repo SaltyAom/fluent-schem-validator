@@ -1,9 +1,9 @@
 {
     "module": {
-        "type": "commonjs"
+        "type": "es6"
     },
     "jsc": {
-        "baseUrl": "src",
+        // "baseUrl": "src",
         "target": "es2019",
         "parser": {
             "syntax": "typescript"

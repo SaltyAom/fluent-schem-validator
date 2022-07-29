@@ -71,7 +71,7 @@ type FluentSchema =
 const eq = (a: unknown[], b: unknown[]) => {
     if (a.length !== b.length) return false
 
-    for (var i = 0; i < a.length; ++i) if (!a.includes(b[i])) return false
+    for (let i = 0; i < a.length; ++i) if (!a.includes(b[i])) return false
 
     return true
 }
@@ -96,31 +96,52 @@ const uriRegex =
 const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
-const validateString = (v: string, s: FluentStringSchema) => {
-    if (s.minLength && v.length < s.minLength) return false
-    if (s.maxLength && v.length > s.maxLength) return false
+const validateString = (v: string, s: FluentStringSchema, label: string) => {
+    if (s.minLength && v.length < s.minLength)
+        throw new Error(
+            `Expected ${label} to have minimum length of ${s.maxLength} found ${v.length}`
+        )
+    if (s.maxLength && v.length > s.maxLength)
+        throw new Error(
+            `Expected ${label} to have maximum length of ${s.maxLength} found ${v.length}`
+        )
 
     switch (s.format) {
         case 'date':
         case 'date-time':
         case 'time':
-            if (isNaN(Date.parse(v))) return false
+            if (isNaN(Date.parse(v)))
+                throw new Error(
+                    `Expected ${label} to be ${s.format} found ${v}`
+                )
             break
 
         case 'email':
-            if (!emailRegex.test(v)) return false
+            if (!emailRegex.test(v))
+                throw new Error(
+                    `Expected ${label} to be ${s.format} found ${v}`
+                )
             break
 
         case 'hostname':
-            if (!hostnameRegex.test(v)) return false
+            if (!hostnameRegex.test(v))
+                throw new Error(
+                    `Expected ${label} to be ${s.format} found ${v}`
+                )
             break
 
         case 'ipv4':
-            if (!ipv4Regex.test(v)) return false
+            if (!ipv4Regex.test(v))
+                throw new Error(
+                    `Expected ${label} to be ${s.format} found ${v}`
+                )
             break
 
         case 'ipv6':
-            if (!ipv6Regex.test(v)) return false
+            if (!ipv6Regex.test(v))
+                throw new Error(
+                    `Expected ${label} to be ${s.format} found ${v}`
+                )
             break
 
         case 'json-pointer':
@@ -128,7 +149,9 @@ const validateString = (v: string, s: FluentStringSchema) => {
             try {
                 JSON.parse(v)
             } catch (e) {
-                return false
+                throw new Error(
+                    `Expected ${label} to be ${s.format} found ${v}`
+                )
             }
             break
 
@@ -136,7 +159,9 @@ const validateString = (v: string, s: FluentStringSchema) => {
             try {
                 new RegExp(v)
             } catch (e) {
-                return false
+                throw new Error(
+                    `Expected ${label} to be ${s.format} found ${v}`
+                )
             }
             break
 
@@ -144,44 +169,86 @@ const validateString = (v: string, s: FluentStringSchema) => {
         case 'uri-reference':
         case 'uri-template':
         case 'url':
-            if (!uriRegex.test(v)) return false
+            if (!uriRegex.test(v))
+                throw new Error(
+                    `Expected ${label} to be ${s.format} found ${v}`
+                )
             break
 
         case 'uuid':
-            if (!uuidRegex.test(v)) return false
+            if (!uuidRegex.test(v))
+                throw new Error(
+                    `Expected ${label} to be ${s.format} found ${v}`
+                )
             break
 
         default:
             break
     }
 
-    if (s.pattern && !RegExp(s.pattern).test(v)) return false
+    if (s.pattern && !RegExp(s.pattern).test(v))
+        throw new Error(`Expected ${label} to match ${s.pattern} found ${v}`)
 
     return true
 }
 
-const validateNumber = (v: number, s: FluentNumberSchema) => {
-    if (s.minimum !== undefined && v < s.minimum) return false
+const validateNumber = (v: number, s: FluentNumberSchema, label: string) => {
+    if (s.minimum !== undefined && v < s.minimum)
+        throw new Error(
+            `Expected ${label} to have minimum of ${s.minimum} found ${v}`
+        )
     if (s.exclusiveMinimum !== undefined && v <= s.exclusiveMinimum)
-        return false
-    if (s.maximum !== undefined && v > s.maximum) return false
+        throw new Error(
+            `Expected ${label} to have exclusive minimum of ${s.exclusiveMinimum} found ${v}`
+        )
+    if (s.maximum !== undefined && v > s.maximum)
+        throw new Error(
+            `Expected ${label} to have maximum of ${s.maximum} found ${v}`
+        )
+
     if (s.exclusiveMaximum !== undefined && v >= s.exclusiveMaximum)
-        return false
-    if (s.multipleOf !== undefined && v % s.multipleOf !== 0) return false
+        throw new Error(
+            `Expected ${label} to have exclusive maximum of ${s.exclusiveMinimum} found ${v}`
+        )
+
+    if (s.multipleOf !== undefined && v % s.multipleOf !== 0)
+        throw new Error(
+            `Expected ${label} to be multipleOf ${s.exclusiveMinimum} found ${v}`
+        )
 
     return true
 }
+
+const formatMultipleError = (
+    type: string,
+    {
+        label,
+        schema,
+        invalid,
+        value
+    }: {
+        label: string
+        schema: Schema
+        invalid?: FluentObjectSchema
+        value: Object
+    }
+) =>
+    new Error(
+        `Expect ${label} to be ${type} \n${JSON.stringify(
+            schema,
+            null,
+            2
+        )},\nFound ${label} to be ${JSON.stringify(value, null, 2)}${
+            !invalid ? '' : ` instead of ${JSON.stringify(invalid, null, 2)}`
+        }`
+    )
+
+export type Schema = FluentSchema | ObjectSchema | Object
 
 const validate = (
-    model:
-        | string
-        | number
-        | boolean
-        | Array<any>
-        | Record<string, any>
-        | Object
-        | S,
-    s: FluentSchema | ObjectSchema | Object
+    value: any,
+    s: Schema,
+    label: string = 'value'
 ): boolean => {
     const isFluentSchema = 'isFluentSchema' in s
     if (!isFluentSchema && !('type' in s)) throw new Error('Invalid schema')
@@ -190,29 +257,93 @@ const validate = (
         ? (s.valueOf() as FluentSchema)
         : s
 
-    if (schema.anyOf) return schema.anyOf.some((s) => validate(model, s))
-    if (schema.oneOf) return schema.oneOf.some((s) => validate(model, s))
-    if (schema.not) return !validate(model, schema.not)
-    if (schema.allOf) return schema.allOf.every((s) => validate(model, s))
+    if (schema.anyOf) {
+        const valid = schema.anyOf.find((s, index) => {
+            try {
+                return validate(value, s, `${label}[${index}]`)
+            } catch (err) {
+                return false
+            }
+        })
+
+        if (!valid)
+            throw formatMultipleError('any of', {
+                value,
+                label,
+                schema: schema.anyOf
+            })
+
+        return true
+    }
+
+    if (schema.oneOf) {
+        const valid = schema.oneOf.find((s, index) => {
+            try {
+                return validate(value, s, `${label}[${index}]`)
+            } catch (err) {
+                return false
+            }
+        })
+
+        if (!valid)
+            throw formatMultipleError('one of', {
+                value,
+                label,
+                schema: schema.oneOf
+            })
+
+        return true
+    }
+
+    if (schema.not) return !validate(value, schema.not)
+    if (schema.allOf) {
+        const invalid = schema.allOf.find((s, index) => {
+            try {
+                validate(value, s, `${label}[${index}]`)
+            } catch (err) {
+                return true
+            }
+        })
+
+        if (invalid)
+            throw formatMultipleError('all of', {
+                value,
+                invalid,
+                label,
+                schema: schema.allOf
+            })
+
+        return true
+    }
 
     const isArray = schema.type === 'array'
 
     if (!isArray && schema.type !== 'object') {
-        const type = typeof model
-        if (type === 'object') return false
-        if (schema.type !== type) return false
+        const type = typeof value
+        if (type === 'object')
+            throw new TypeError(
+                `Expected ${label} not to be object, please report this bug`
+            )
+
+        if (schema.type !== type)
+            throw new TypeError(
+                `Expected ${label} to be ${schema.type} found ${type}`
+            )
 
         if (schema.type === 'string')
-            return validateString(model as string, schema)
+            return validateString(value as string, schema, label)
 
         if (schema.type === 'number')
-            return validateNumber(model as number, schema)
+            return validateNumber(value as number, schema, label)
 
         return true
     }
 
     if (isArray) {
-        if (!Array.isArray(model)) return false
+        if (!Array.isArray(value))
+            throw new TypeError(
+                `Expected ${label} to be array found ${typeof value}`
+            )
 
         const items =
             typeof schema.items === 'undefined'
@@ -221,46 +352,88 @@ const validate = (
                 ? [schema.items]
                 : schema.items
 
-        if (schema.minItems && model.length < schema.minItems) return false
-        if (schema.maxItems && model.length > schema.maxItems) return false
+        if (schema.minItems && value.length < schema.minItems)
+            throw new Error(
+                `Expected ${label} minimum items to be ${schema.minItems} found ${value.length}`
+            )
+        if (schema.maxItems && value.length > schema.maxItems)
+            throw new Error(
+                `Expected ${label} maximum items to be ${schema.minItems} found ${value.length}`
+            )
+
         if (schema.uniqueItems && new Set(items).size !== items.length)
-            return false
+            throw new Error(
+                `Expected ${label} to be unique found ${Object.keys(items)}`
+            )
 
         if (items.length === 0) return true
-        if (model.length === 0) return true
+        if (value.length === 0) return true
 
-        return model.every((v) => items.some((s) => validate(v, s)))
+        const valid = value.every((v) =>
+            items.some((s, index) => {
+                try {
+                    return validate(v, s, `${label}[${index}]`)
+                } catch (_) {
+                    return false
+                }
+            })
+        )
+
+        if (!valid)
+            throw formatMultipleError('items', {
+                label,
+                schema,
+                value
+            })
+
+        return valid
     }
 
-    if (typeof model !== 'object' || Array.isArray(model)) return false
+    if (typeof value !== 'object' || Array.isArray(value))
+        throw new TypeError(
+            `Expected ${label} not to be array, please report this bug`
+        )
+
     if (!schema?.properties) return true
 
     const keys = Object.keys(schema.properties)
     const required = schema?.required ?? []
     const optionals = keys.filter((k) => !required.includes(k))
 
-    if (!eq(keys, [...new Set(Object.keys(model).concat(optionals))]))
-        return false
+    const keysSchema = [...new Set(Object.keys(value).concat(optionals))]
+    if (!eq(keys, keysSchema))
+        throw new TypeError(
+            `Expected every key of ${label} to be one of [${keys.join(
+                ', '
+            )}] found [${Object.keys(value).join(', ')}]`
+        )
 
     return keys.every((key) => {
         const s: FluentObjectSchema = schema.properties![key]
-        const value = (model as unknown as Record<string, any>)[key]
+        const child = (value as unknown as Record<string, any>)[key]
 
-        const type = typeof value
+        const type = typeof child
 
         if (s.type === 'object') {
-            if (type !== 'object') return false
+            if (type !== 'object')
+                throw new TypeError(
+                    `Expected ${label} to be object found ${type}`
+                )
 
-            return validate(value, s)
+            return validate(child, s, `${label}.${key}`)
         }
 
         const isUndefined = type === 'undefined'
 
-        if (key in required && isUndefined) return false
+        if (key in required && isUndefined)
+            throw new Error(`Expected ${label} not to be undefined`)
         if (isUndefined) return true
-        if (!isUndefined && type !== s.type) return false
+        if (!isUndefined && type !== s.type)
+            throw new TypeError(
+                `Expected ${label} to be ${s.type} found ${type}`
+            )
 
-        return validate(value, s)
+        return validate(child, s, `${label}.${key}`)
     })
 }
 

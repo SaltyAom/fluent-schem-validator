@@ -1,6 +1,6 @@
 module.exports = {
     transform: {
-        '^.+\\.(test|spec).(t|j)s$': [
+        '^.+\\.(t|j)s$': [
             '@swc/jest',
             {
                 module: {
@@ -9,7 +9,7 @@ module.exports = {
                 jsc: {
                     target: 'es2019',
                     externalHelpers: false
-                }
+                }       
             }
         ]
     }
